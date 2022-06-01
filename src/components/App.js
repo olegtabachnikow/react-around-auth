@@ -36,6 +36,7 @@ function App() {
     React.useState("Yes");
   const [headerStatus, setHeaderStatus] = React.useState(false);
   const [isSuccessed, setIsSuccessed] = React.useState(false);
+  const [isButtonDisabled, setIsButtonDisabled] = React.useState(false);
   const location = useLocation();
   const history = useHistory();
   React.useEffect(() => {
@@ -45,13 +46,13 @@ function App() {
   }, [location.pathname]);
   React.useEffect(() => {
     const closeByEscape = (e) => {
-      if (e.key === 'Escape') {
+      if (e.key === "Escape") {
         closeAllPopups();
       }
-    }
-    document.addEventListener('keydown', closeByEscape)
-    return () => document.removeEventListener('keydown', closeByEscape)
-}, [])
+    };
+    document.addEventListener("keydown", closeByEscape);
+    return () => document.removeEventListener("keydown", closeByEscape);
+  }, []);
 
   React.useEffect(() => {
     api
@@ -109,11 +110,11 @@ function App() {
     login(data)
       .then((res) => {
         if (res.token) {
-        localStorage.setItem("jwt", res.token);
-        setLoggedIn(true);
-        setCurrentUserEmail(data.email);
-        history.push("/");
-        return res;
+          localStorage.setItem("jwt", res.token);
+          setLoggedIn(true);
+          setCurrentUserEmail(data.email);
+          history.push("/");
+          return res;
         }
         console.log(res.message);
       })
@@ -261,18 +262,24 @@ function App() {
           isOpen={isEditAvatarPopupOpen}
           buttonText={popupButtonText}
           onUpdateAvatar={handleUpdateAvatar}
+          setIsButtonDisabled={setIsButtonDisabled}
+          isButtonDisabled={isButtonDisabled}
         />
         <EditProfilePopup
           onClose={closeAllPopups}
           isOpen={isEditProfilePopupOpen}
           buttonText={popupButtonText}
           onUpdateUser={handleUpdateUser}
+          setIsButtonDisabled={setIsButtonDisabled}
+          isButtonDisabled={isButtonDisabled}
         />
         <AddPlacePopup
           onClose={closeAllPopups}
           isOpen={isAddPlacePopupOpen}
           buttonText={popupButtonText}
           onAddPlaceSubmit={handleAddPlaceSubmit}
+          setIsButtonDisabled={setIsButtonDisabled}
+          isButtonDisabled={isButtonDisabled}
         />
         <ConfirmDeleteCardPopup
           onClose={closeAllPopups}

@@ -1,13 +1,30 @@
 import PopupWithForm from "./PopupWithForm";
 import React from "react";
 
-function EditAvatarPopup({ isOpen, onClose, onUpdateAvatar, buttonText }) {
-  const inputAvatarRef = React.useRef();
+function EditAvatarPopup({ isOpen, onClose, onUpdateAvatar, buttonText, setIsButtonDisabled, isButtonDisabled }) {
+  const [isValid, setIsValid] = React.useState(true);
+  const [error, setError] = React.useState("");
+  const [avatar, setAvatar] = React.useState("");
+  React.useEffect(() => {
+    setIsButtonDisabled(true);
+    setAvatar("");
+    setIsValid(true);
+  }, [isOpen, setIsButtonDisabled]);
   function handleSubmit(evt) {
     evt.preventDefault();
     onUpdateAvatar({
-      avatar: inputAvatarRef.current.value,
+      avatar: avatar,
     });
+  }
+  function handleValidation(evt) {
+    if (!evt.target.validity.valid) {
+      setError(evt.target.validationMessage);
+      setIsValid(false);
+      setIsButtonDisabled(true);
+    } else {
+      setIsValid(true);
+      setIsButtonDisabled(false);
+    }
   }
   return (
     <PopupWithForm
@@ -17,7 +34,7 @@ function EditAvatarPopup({ isOpen, onClose, onUpdateAvatar, buttonText }) {
       buttonText={buttonText}
       onClose={onClose}
       onSubmit={handleSubmit}
-      noValidate
+      isButtonDisabled={isButtonDisabled}
     >
       <input
         className="popup__input popup__input_value_url"
@@ -26,9 +43,19 @@ function EditAvatarPopup({ isOpen, onClose, onUpdateAvatar, buttonText }) {
         name="avatar"
         placeholder="Image URL"
         required
-        ref={inputAvatarRef}
+        value={avatar || ""}
+        onChange={(evt) => {
+          setAvatar(evt.target.value);
+          handleValidation(evt);
+        }}
       />
-      <span className="popup__error_avatar-url popup__error avatar-input-error"></span>
+      <span
+        className={`popup__error_avatar-url popup__error avatar-input-error ${
+          !isValid ? "popup__error_active" : ""
+        }`}
+      >
+        {error}
+      </span>
     </PopupWithForm>
   );
 }

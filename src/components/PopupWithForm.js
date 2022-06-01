@@ -8,6 +8,7 @@ function PopupWithForm({
   onClose,
   onSubmit,
   children,
+  isButtonDisabled
 }) {
   return (
     <section
@@ -29,7 +30,7 @@ function PopupWithForm({
         >
           <h2 className="popup__title">{title}</h2>
           {children}
-          <button className="popup__button" type="submit">
+          <button className={`popup__button ${isButtonDisabled ? 'popup__button_disabled' : ''}`} type="submit">
             {buttonText}
           </button>
         </form>
