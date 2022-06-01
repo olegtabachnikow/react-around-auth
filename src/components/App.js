@@ -44,6 +44,16 @@ function App() {
       : setHeaderStatus(false);
   }, [location.pathname]);
   React.useEffect(() => {
+    const closeByEscape = (e) => {
+      if (e.key === 'Escape') {
+        closeAllPopups();
+      }
+    }
+    document.addEventListener('keydown', closeByEscape)
+    return () => document.removeEventListener('keydown', closeByEscape)
+}, [])
+
+  React.useEffect(() => {
     api
       .getInitialCards()
       .then((res) => {
@@ -79,10 +89,8 @@ function App() {
       .then((res) => {
         if (res.status === 400) {
           setIsSuccessed(false);
-          setIsInfoTooltipPopupOpen(true);
         } else if (res.status === 201) {
           setIsSuccessed(true);
-          setIsInfoTooltipPopupOpen(true);
         }
         return res.json();
       })
@@ -91,8 +99,10 @@ function App() {
       })
       .catch((err) => {
         setIsSuccessed(false);
-        setIsInfoTooltipPopupOpen(true);
         console.log(err);
+      })
+      .finally(() => {
+        setIsInfoTooltipPopupOpen(true);
       });
   }
   function handleLogin(data) {

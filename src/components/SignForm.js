@@ -3,14 +3,16 @@ import { Link } from "react-router-dom";
 
 function SignForm({ title, text, headerStatus, handleSubmit }) {
   const [pathLink, setPathLink] = React.useState('');
+  const [email, setEmail] = React.useState();
+  const [password, setPassword] = React.useState();
   React.useEffect(() => {
     headerStatus ? setPathLink('/signup') : setPathLink('/signin');
   },[headerStatus]);
   function handleSubmitForm(evt) {
     evt.preventDefault();
     handleSubmit({
-      email: evt.target.email.value,
-      password: evt.target.password.value
+      email: email,
+      password: password
     })
   }
   return (
@@ -25,6 +27,8 @@ function SignForm({ title, text, headerStatus, handleSubmit }) {
           placeholder="Email"
           autoComplete="username"
           required
+          value={email || ''}
+          onChange={(evt) => {setEmail(evt.target.value)}}
         />
         <input
           className="sign__input sign__input_value_password"
@@ -36,6 +40,8 @@ function SignForm({ title, text, headerStatus, handleSubmit }) {
           maxLength={12}
           autoComplete="current-password"
           required
+          value={password || ''}
+          onChange={(evt) => {setPassword(evt.target.value)}}
         />
         <button className="sign__button" type="submit">{title}</button>
         <Link className="sign__link" to={pathLink || ''}>{text}</Link>

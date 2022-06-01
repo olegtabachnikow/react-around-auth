@@ -2,20 +2,25 @@ import PopupWithForm from "./PopupWithForm";
 import React from "react";
 
 function AddPlacePopup({ isOpen, onClose, onAddPlaceSubmit, buttonText }) {
-    const [title, setTitle] = React.useState('');
-    const [url, setUrl] = React.useState('');
-    function handleTitleChange(evt) {
-        setTitle(evt.target.value);
-    }  
-    function handleUrlChange(evt) {
-      setUrl(evt.target.value);
-  }  
+  const [title, setTitle] = React.useState("");
+  const [url, setUrl] = React.useState("");
+  React.useEffect(() => {
+    setTitle("");
+    setUrl("");
+  }, [isOpen]);
+
+  function handleTitleChange(evt) {
+    setTitle(evt.target.value);
+  }
+  function handleUrlChange(evt) {
+    setUrl(evt.target.value);
+  }
   function handleSubmit(evt) {
-      evt.preventDefault();
-      onAddPlaceSubmit({
-          name: title,
-          link: url,
-        });
+    evt.preventDefault();
+    onAddPlaceSubmit({
+      name: title,
+      link: url,
+    });
   }
   return (
     <PopupWithForm
@@ -35,6 +40,7 @@ function AddPlacePopup({ isOpen, onClose, onAddPlaceSubmit, buttonText }) {
         minLength="1"
         maxLength="30"
         required
+        value={title}
         onChange={handleTitleChange}
       />
       <span className="popup__error_addCard-name popup__error title-input-error"></span>
@@ -45,6 +51,7 @@ function AddPlacePopup({ isOpen, onClose, onAddPlaceSubmit, buttonText }) {
         name="url"
         placeholder="Image URL"
         required
+        value={url}
         onChange={handleUrlChange}
       />
       <span className="popup__error_addCard-url popup__error url-input-error"></span>
