@@ -1,31 +1,30 @@
 import PopupWithForm from "./PopupWithForm";
 import React from "react";
+import { useFormAndValidation } from "../hooks/useFormAndValidation";
 
-function EditAvatarPopup({ isOpen, onClose, onUpdateAvatar, buttonText, setIsButtonDisabled, isButtonDisabled }) {
-  const [isValid, setIsValid] = React.useState(true);
-  const [error, setError] = React.useState("");
-  const [avatar, setAvatar] = React.useState("");
+function EditAvatarPopup({
+  isOpen,
+  onClose,
+  onUpdateAvatar,
+  buttonText,
+  setIsButtonDisabled,
+  isButtonDisabled,
+}) {
+  const { values, handleChange, errors, isValid, resetForm } =
+    useFormAndValidation();
   React.useEffect(() => {
-    setIsButtonDisabled(true);
-    setAvatar("");
-    setIsValid(true);
-  }, [isOpen, setIsButtonDisabled]);
+    isOpen && resetForm();
+  }, [isOpen, resetForm]);
+  React.useEffect(() => {
+    isValid ? setIsButtonDisabled(false) : setIsButtonDisabled(true);
+  }, [isValid, setIsButtonDisabled]);
   function handleSubmit(evt) {
     evt.preventDefault();
     onUpdateAvatar({
-      avatar: avatar,
+      avatar: values.avatar,
     });
   }
-  function handleValidation(evt) {
-    if (!evt.target.validity.valid) {
-      setError(evt.target.validationMessage);
-      setIsValid(false);
-      setIsButtonDisabled(true);
-    } else {
-      setIsValid(true);
-      setIsButtonDisabled(false);
-    }
-  }
+
   return (
     <PopupWithForm
       name="avatar"
@@ -43,18 +42,15 @@ function EditAvatarPopup({ isOpen, onClose, onUpdateAvatar, buttonText, setIsBut
         name="avatar"
         placeholder="Image URL"
         required
-        value={avatar || ""}
-        onChange={(evt) => {
-          setAvatar(evt.target.value);
-          handleValidation(evt);
-        }}
+        value={values.avatar || ""}
+        onChange={handleChange}
       />
       <span
         className={`popup__error_avatar-url popup__error avatar-input-error ${
           !isValid ? "popup__error_active" : ""
         }`}
       >
-        {error}
+        {errors.avatar}
       </span>
     </PopupWithForm>
   );

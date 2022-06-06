@@ -1,71 +1,33 @@
 import PopupWithForm from "./PopupWithForm";
 import React from "react";
+import { useFormAndValidation } from "../hooks/useFormAndValidation";
 import CurrentUserContext from "../contexts/CurrentUserContext";
-function EditProfilePopup({ isOpen, onClose, onUpdateUser, buttonText, setIsButtonDisabled, isButtonDisabled }) {
+
+function EditProfilePopup({
+  isOpen,
+  onClose,
+  onUpdateUser,
+  buttonText,
+  setIsButtonDisabled,
+  isButtonDisabled,
+}) {
   const currentUser = React.useContext(CurrentUserContext);
-  const [isValid, setIsValid] = React.useState({ name: true, about: true });
-  const [errors, setErrors] = React.useState({ name: "", about: "" });
-  const [name, setName] = React.useState("");
-  const [description, setDescription] = React.useState("");
-  function handleNameChange(evt) {
-    if (!evt.target.validity.valid) {
-      setErrors({
-        ...errors,
-        name: evt.target.validationMessage,
-      });
-      setIsValid({
-        ...isValid,
-        name: false,
-      });
-      setIsButtonDisabled(true);
-    } else {
-      setIsValid({
-        ...isValid,
-        name: true,
-      });
-      setErrors({
-        ...errors,
-        name: "",
-      });
-      setIsButtonDisabled(false);
-    }
-    setName(evt.target.value);
-  }
-  function handleDescriptionChange(evt) {
-    if (!evt.target.validity.valid) {
-      setErrors({
-        ...errors,
-        about: evt.target.validationMessage,
-      });
-      setIsValid({
-        ...isValid,
-        about: false,
-      });
-    } else {
-      setIsValid({
-        ...isValid,
-        about: true,
-      });
-      setErrors({
-        ...errors,
-        about: "",
-      });
-    }
-    setDescription(evt.target.value);
-  }
+  const { values, handleChange, errors, isValid, setValues } =
+    useFormAndValidation();
+
   function handleSubmit(evt) {
     evt.preventDefault();
     onUpdateUser({
-      name,
-      about: description,
+      name: values.name,
+      about: values.about,
     });
   }
   React.useEffect(() => {
-    setErrors({});
-    setIsValid({});
-    setName(currentUser.name);
-    setDescription(currentUser.about);
-  }, [currentUser, isOpen, setIsButtonDisabled]);
+    isOpen && setValues({ name: currentUser.name, about: currentUser.about });
+  }, [isOpen, setValues, currentUser]);
+  React.useEffect(() => {
+    isValid ? setIsButtonDisabled(false) : setIsButtonDisabled(true);
+  }, [isValid, setIsButtonDisabled]);
 
   return (
     <PopupWithForm
@@ -86,12 +48,12 @@ function EditProfilePopup({ isOpen, onClose, onUpdateUser, buttonText, setIsButt
         minLength="2"
         maxLength="40"
         required
-        onChange={handleNameChange}
-        value={name || ""}
+        onChange={handleChange}
+        value={values.name || ""}
       />
       <span
         className={`popup__error name-input-error ${
-          isValid.name !== "" ? "popup__error_active" : ""
+          !isValid ? "popup__error_active" : ""
         }`}
       >
         {errors.name}
@@ -105,12 +67,12 @@ function EditProfilePopup({ isOpen, onClose, onUpdateUser, buttonText, setIsButt
         minLength="2"
         maxLength="200"
         required
-        value={description || ""}
-        onChange={handleDescriptionChange}
+        value={values.about || ""}
+        onChange={handleChange}
       />
       <span
         className={`popup__error_profile-about popup__error about-input-error ${
-          isValid.about !== "" ? "popup__error_active" : ""
+          !isValid ? "popup__error_active" : ""
         }`}
       >
         {errors.about}

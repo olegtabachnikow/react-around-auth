@@ -3,8 +3,8 @@ import { Link } from "react-router-dom";
 
 function SignForm({ title, text, headerStatus, handleSubmit }) {
   const [pathLink, setPathLink] = React.useState('');
-  const [email, setEmail] = React.useState();
-  const [password, setPassword] = React.useState();
+  const [email, setEmail] = React.useState('');
+  const [password, setPassword] = React.useState('');
   React.useEffect(() => {
     headerStatus ? setPathLink('/signup') : setPathLink('/signin');
   },[headerStatus]);
