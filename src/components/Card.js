@@ -1,9 +1,9 @@
 import React from "react";
 import CurrentUserContext from "../contexts/CurrentUserContext";
-function Card({ cardData, onCardClick, onDeleteClick, onCardLike, onCardDelete }) {
+function Card({ cardData, onCardClick, onDeleteClick, onCardLike }) {
   const currentUser = React.useContext(CurrentUserContext);
-  const isOwn = cardData.owner._id === currentUser._id;
-  const isLiked = cardData.likes.some(user => user._id === currentUser._id);
+  const isOwn = cardData.owner === currentUser._id;
+  const isLiked = cardData.likes.some((userId) => userId === currentUser._id);
   const cardLikeButtonClassName = (`gallery__like-button ${isLiked ? 'gallery__like-button_active' : ''}`);
   const cardDisplayStyle =  (isOwn ? {display:'block'} : {display:'none'});
   function handleImageCLick() {

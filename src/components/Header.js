@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import logoPath from "../images/logo.svg";
 
-function Header({ loggedIn, headerStatus, currentUserEmail, signOut }) {
+function Header({ loggedIn, headerStatus, currentUser, signOut }) {
   const [isActive, setIsActive] = React.useState(false);
   return (
     <header className="header">
@@ -32,7 +32,7 @@ function Header({ loggedIn, headerStatus, currentUserEmail, signOut }) {
             isActive && "header__link-container_active"
           }`}
         >
-          <p className="header__user-email">{currentUserEmail}</p>
+          <p className="header__user-email">{currentUser.email}</p>
           <button
             onClick={signOut}
             className="header__logout-button"

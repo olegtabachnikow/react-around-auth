@@ -1,4 +1,4 @@
-export const BASE_URL = "https://register.nomoreparties.co";
+export const BASE_URL = "https://api.oleg.students.nomoreparties.sbs";
 function checkResponce(res) {
   if (res.ok) {
     return res.json();
@@ -13,7 +13,7 @@ export const register = ({ email, password }) => {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({ email, password }),
-  }).then(checkResponce);
+  });
 };
 
 export const login = ({ email, password }) => {

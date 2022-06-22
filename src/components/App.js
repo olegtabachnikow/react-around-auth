@@ -19,7 +19,6 @@ import { register, login, checkToken } from "../utils/auth";
 function App() {
   const [loggedIn, setLoggedIn] = React.useState(false);
   const [currentUser, setCurrentUser] = React.useState({});
-  const [currentUserEmail, setCurrentUserEmail] = React.useState("");
   const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] =
     React.useState(false);
   const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] =
@@ -55,43 +54,47 @@ function App() {
   }, []);
 
   React.useEffect(() => {
-    api
-      .getInitialCards()
-      .then((res) => {
-        setCards(res);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }, []);
+    loggedIn &&
+      api
+        .getInitialCards()
+        .then((res) => {
+          setCards(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+  }, [loggedIn]);
   React.useEffect(() => {
     const token = localStorage.getItem("jwt");
     token &&
       checkToken(token)
         .then((res) => {
           setLoggedIn(true);
-          setCurrentUserEmail(res.data.email);
+          setCurrentUser(res.user);
           history.push("/");
         })
         .catch((err) => console.log(err));
   }, [history]);
   React.useEffect(() => {
-    api
-      .getUserInfo()
-      .then((res) => {
-        setCurrentUser(res);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }, []);
+    loggedIn &&
+      api
+        .getUserInfo()
+        .then((res) => {
+          setCurrentUser(res.user);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+  }, [loggedIn]);
   function handleRegister(data) {
     register(data)
       .then((res) => {
         if (res.status === 400) {
           setIsSuccessed(false);
-        } else if (res.status === 201) {
+        } else if (res.status === 200) {
           setIsSuccessed(true);
+        } else if (res.status === 409) {
+          setIsSuccessed(false);
         }
         return res.json();
       })
@@ -112,11 +115,9 @@ function App() {
         if (res.token) {
           localStorage.setItem("jwt", res.token);
           setLoggedIn(true);
-          setCurrentUserEmail(data.email);
           history.push("/");
           return res;
         }
-        console.log(res.message);
       })
       .catch((err) => console.log(err));
   }
@@ -125,7 +126,8 @@ function App() {
     api
       .sendCardData(cardData)
       .then((res) => {
-        setCards([res, ...cards]);
+        cards.length ? setCards([res.data, ...cards]) : 
+        setCards([ res.data ]);
         closeAllPopups();
       })
       .catch((err) => {
@@ -133,13 +135,13 @@ function App() {
       });
   }
   function handleCardLike(card) {
-    const isLiked = card.likes.some((user) => user._id === currentUser._id);
+    const isLiked = card.likes.some((userId) => userId === currentUser._id);
     api
-      .changeLikeCardStatus(card, isLiked)
+      .handleLike(card, isLiked)
       .then((newCard) => {
         setCards((state) =>
           state.map((currentCard) =>
-            currentCard._id === card._id ? newCard : currentCard
+            currentCard._id === card._id ? newCard.data : currentCard
           )
         );
       })
@@ -149,7 +151,7 @@ function App() {
   }
   function signOut() {
     localStorage.removeItem("jwt");
-    setCurrentUserEmail("");
+    setCurrentUser({});
     setLoggedIn(false);
     history.push("./signin");
   }
@@ -170,7 +172,7 @@ function App() {
     api
       .setUserInfo(userData)
       .then((res) => {
-        setCurrentUser(res);
+        setCurrentUser(res.user);
         closeAllPopups();
       })
       .catch((err) => {
@@ -182,7 +184,7 @@ function App() {
     api
       .editProfilePhoto(userData)
       .then((res) => {
-        setCurrentUser(res);
+        setCurrentUser(res.user);
         closeAllPopups();
       })
       .catch((err) => {
@@ -224,13 +226,12 @@ function App() {
         <Header
           loggedIn={loggedIn}
           headerStatus={headerStatus}
-          currentUserEmail={currentUserEmail}
+          currentUser={currentUser}
           signOut={signOut}
         />
         <Switch>
           <ProtectedRoute exact path="/" loggedIn={loggedIn}>
             <Main
-              loggedIn={loggedIn}
               onEditProfileClick={handleEditProfileClick}
               onAddPlaceClick={handleAddPlaceClick}
               onEditAvatarClick={handleEditAvatarClick}
