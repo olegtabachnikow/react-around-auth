@@ -1,2 +1,10 @@
-Around the U.S. frontend  of project. ReactJS, JS, HTML5, CSS are used. 
-[Link to website](https://www.oleg.students.nomoreparties.sbs/)
+# Around the U.S. 
+
+One page social network application allow registered users edit their bio & add, like and delete photos.
+
+## Technologies used:
+
+HTML, CSS, Javascript, ReactJS;
+Deployed on Google Cloud
+
+[Visit website](https://www.oleg.students.nomoreparties.sbs/)
